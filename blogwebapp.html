@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlogSphere - Share Your Thoughts</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .editor-toolbar {
+            display: flex;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            background-color: #f3f4f6;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .editor-toolbar button {
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            background-color: white;
+            border: 1px solid #d1d5db;
+            cursor: pointer;
+        }
+        .editor-toolbar button:hover {
+            background-color: #e5e7eb;
+        }
+        #editor {
+            min-height: 200px;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            outline: none;
+        }
+        .post-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .post-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .tag {
+            transition: background-color 0.2s;
+        }
+        .tag:hover {
+            background-color: #3b82f6;
+            color: white;
+        }
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header/Navigation -->
+    <header class="bg-white shadow-sm sticky top-0 z-10">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <i class="fas fa-blog text-blue-500 text-2xl mr-2"></i>
+                        <span class="text-xl font-bold text-gray-800">BlogSphere</span>
+                    </div>
+                    <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                        <a href="#" class="border-blue-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium" id="home-link">Home</a>
+                        <a href="#" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium" id="discover-link">Discover</a>
+                        <a href="#" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium" id="categories-link">Categories</a>
+                    </div>
+                </div>
+                <div class="hidden sm:ml-6 sm:flex sm:items-center">
+                    <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors" id="create-post-btn">
+                        <i class="fas fa-plus mr-1"></i> New Post
+                    </button>
+                    <div class="ml-3 relative">
+                        <div>
+                            <button type="button" class="bg-gray-800 rounded-full flex text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white" id="user-menu-button" aria-expanded="false" aria-haspopup="true">
+                                <span class="sr-only">Open user menu</span>
+                                <img class="h-8 w-8 rounded-full" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="">
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="-mr-2 flex items-center sm:hidden">
+                    <button type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500" id="mobile-menu-button">
+                        <span class="sr-only">Open main menu</span>
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Mobile menu -->
+        <div class="hidden sm:hidden bg-white border-t" id="mobile-menu">
+            <div class="pt-2 pb-3 space-y-1">
+                <a href="#" class="bg-blue-50 border-blue-500 text-blue-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">Home</a>
+                <a href="#" class="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">Discover</a>
+                <a href="#" class="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">Categories</a>
+            </div>
+            <div class="pt-4 pb-3 border-t border-gray-200">
+                <div class="flex items-center px-4">
+                    <div class="flex-shrink-0">
+                        <img class="h-10 w-10 rounded-full" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="">
+                    </div>
+                    <div class="ml-3">
+                        <div class="text-base font-medium text-gray-800">John Doe</div>
+                        <div class="text-sm font-medium text-gray-500">john@example.com</div>
+                    </div>
+                </div>
+                <div class="mt-3 space-y-1">
+                    <a href="#" class="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">Your Profile</a>
+                    <a href="#" class="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">Settings</a>
+                    <a href="#" class="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">Sign out</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Hero Section -->
+        <div class="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl p-8 text-white mb-8">
+            <h1 class="text-4xl font-bold mb-4">Share Your Thoughts With The World</h1>
+            <p class="text-xl mb-6">Join our community of writers and readers. Publish your stories, ideas, and expertise.</p>
+            <button class="bg-white text-blue-600 hover:bg-gray-100 px-6 py-3 rounded-lg font-medium transition-colors">
+                Start Writing Now
+            </button>
+        </div>
+
+        <!-- Featured Posts -->
+        <section class="mb-12">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">Featured Posts</h2>
+                <a href="#" class="text-blue-500 hover:text-blue-700 font-medium">View all</a>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="featured-posts">
+                <!-- Featured posts will be loaded here -->
+            </div>
+        </section>
+
+        <!-- Recent Posts -->
+        <section>
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">Recent Posts</h2>
+                <div class="flex space-x-2">
+                    <button class="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded-md text-sm" id="sort-newest">Newest</button>
+                    <button class="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded-md text-sm" id="sort-popular">Popular</button>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="recent-posts">
+                <!-- Recent posts will be loaded here -->
+            </div>
+            <div class="mt-8 flex justify-center">
+                <button class="bg-white border border-gray-300 hover:bg-gray-50 px-4 py-2 rounded-md font-medium" id="load-more">
+                    Load More
+                </button>
+            </div>
+        </section>
+
+        <!-- Create Post Modal -->
+        <div class="fixed inset-0 bg-black bg-opacity-50 z-20 hidden flex items-center justify-center" id="create-post-modal">
+            <div class="bg-white rounded-lg w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold text-gray-800">Create New Post</h3>
+                        <button id="close-modal" class="text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <form id="post-form">
+                        <div class="mb-4">
+                            <label for="post-title" class="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                            <input type="text" id="post-title" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Your post title" required>
+                        </div>
+                        <div class="mb-4">
+                            <label for="post-image" class="block text-sm font-medium text-gray-700 mb-1">Featured Image URL</label>
+                            <input type="url" id="post-image" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="https://example.com/image.jpg">
+                        </div>
+                        <div class="mb-4">
+                            <label for="post-excerpt" class="block text-sm font-medium text-gray-700 mb-1">Excerpt</label>
+                            <textarea id="post-excerpt" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Brief summary of your post" required></textarea>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Content</label>
+                            <div class="editor-toolbar">
+                                <button type="button" data-command="bold"><i class="fas fa-bold"></i></button>
+                                <button type="button" data-command="italic"><i class="fas fa-italic"></i></button>
+                                <button type="button" data-command="underline"><i class="fas fa-underline"></i></button>
+                                <button type="button" data-command="insertUnorderedList"><i class="fas fa-list-ul"></i></button>
+                                <button type="button" data-command="insertOrderedList"><i class="fas fa-list-ol"></i></button>
+                                <button type="button" data-command="createLink"><i class="fas fa-link"></i></button>
+                                <button type="button" data-command="insertImage"><i class="fas fa-image"></i></button>
+                            </div>
+                            <div id="editor" contenteditable="true" class="focus:ring-2 focus:ring-blue-500 focus:border-transparent"></div>
+                        </div>
+                        <div class="mb-4">
+                            <label for="post-tags" class="block text-sm font-medium text-gray-700 mb-1">Tags (comma separated)</label>
+                            <input type="text" id="post-tags" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="technology, web development, design">
+                        </div>
+                        <div class="flex justify-end space-x-3">
+                            <button type="button" id="cancel-post" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">Cancel</button>
+                            <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Publish Post</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Post Detail Modal -->
+        <div class="fixed inset-0 bg-black bg-opacity-50 z-20 hidden flex items-center justify-center p-4" id="post-detail-modal">
+            <div class="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+                <div class="p-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-800" id="detail-title"></h3>
+                            <div class="flex items-center mt-2 text-gray-600">
+                                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="" class="w-8 h-8 rounded-full mr-2">
+                                <span class="font-medium">John Doe</span>
+                                <span class="mx-2">•</span>
+                                <span id="detail-date"></span>
+                            </div>
+                        </div>
+                        <button id="close-detail-modal" class="text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="mb-6">
+                        <img id="detail-image" src="" alt="" class="w-full h-64 object-cover rounded-lg mb-4">
+                        <p class="text-gray-700 mb-4" id="detail-excerpt"></p>
+                        <div class="prose max-w-none" id="detail-content"></div>
+                    </div>
+                    <div class="flex flex-wrap gap-2 mb-6" id="detail-tags"></div>
+                    <div class="border-t border-gray-200 pt-4">
+                        <h4 class="text-lg font-medium mb-4">Comments (3)</h4>
+                        <div class="space-y-4 mb-6" id="comments-section">
+                            <!-- Comments will be loaded here -->
+                        </div>
+                        <form id="comment-form" class="mt-4">
+                            <div class="mb-3">
+                                <label for="comment" class="sr-only">Your comment</label>
+                                <textarea id="comment" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Write your comment here..." required></textarea>
+                            </div>
+                            <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Post Comment</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-lg font-bold mb-4">BlogSphere</h3>
+                    <p class="text-gray-400">A platform for sharing knowledge, stories, and ideas with the world.</p>
+                </div>
+                <div>
+                    <h4 class="text-sm font-semibold uppercase tracking-wider mb-4">Explore</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Popular Posts</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Recent Posts</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Categories</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Authors</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-sm font-semibold uppercase tracking-wider mb-4">Community</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Guidelines</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Discussions</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Events</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Support</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-sm font-semibold uppercase tracking-wider mb-4">Subscribe</h4>
+                    <p class="text-gray-400 mb-4">Get the latest posts delivered to your inbox.</p>
+                    <form class="flex">
+                        <input type="email" placeholder="Your email" class="px-3 py-2 rounded-l-md text-gray-800 w-full focus:outline-none">
+                        <button type="submit" class="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-r-md">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-400">© 2023 BlogSphere. All rights reserved.</p>
+                <div class="flex space-x-6 mt-4 md:mt-0">
+                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-facebook"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Sample blog data
+        const blogPosts = [
+            {
+                id: 1,
+                title: "Getting Started with Tailwind CSS",
+                excerpt: "Learn how to quickly build modern websites without ever leaving your HTML.",
+                content: "<p>Tailwind CSS is a utility-first CSS framework packed with classes like <code>flex</code>, <code>pt-4</code>, <code>text-center</code> and <code>rotate-90</code> that can be composed to build any design, directly in your markup.</p><p>With Tailwind, you can style your pages by adding pre-defined classes to your HTML elements. This approach allows you to:</p><ul><li>Build custom designs without writing CSS</li><li>Rapidly prototype ideas</li><li>Create responsive layouts with ease</li></ul><p>To get started, install Tailwind via npm:</p><pre><code>npm install -D tailwindcss</code></pre>",
+                image: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+                tags: ["css", "frontend", "web development"],
+                date: "May 15, 2023",
+                likes: 42,
+                comments: 5,
+                featured: true
+            },
+            {
+                id: 2,
+                title: "The Power of JavaScript ES6 Features",
+                excerpt: "Explore the most useful features introduced in ECMAScript 2015 (ES6) that changed how we write JavaScript.",
+                content: "<p>ECMAScript 2015, also known as ES6, introduced many changes to JavaScript that made the language more powerful and easier to work with. Here are some of the most important features:</p><h3>Arrow Functions</h3><p>Arrow functions provide a concise syntax for writing function expressions. They also lexically bind the <code>this</code> value.</p><pre><code>const square = x => x * x;</code></pre><h3>Template Literals</h3><p>Template literals allow for string interpolation and multi-line strings.</p><pre><code>const name = 'John';\nconsole.log(`Hello, ${name}!`);</code></pre><h3>Destructuring Assignment</h3><p>Destructuring allows you to unpack values from arrays or properties from objects into distinct variables.</p><pre><code>const [first, second] = [1, 2];\nconst {name, age} = person;</code></pre>",
+                image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+                tags: ["javascript", "es6", "programming"],
+                date: "June 2, 2023",
+                likes: 38,
+                comments: 7,
+                featured: true
+            },
+            {
+                id: 3,
+                title: "Building RESTful APIs with Node.js and Express",
+                excerpt: "A step-by-step guide to creating robust APIs using Node.js and the Express framework.",
+                content: "<p>Building RESTful APIs is a fundamental skill for modern web developers. Node.js with Express makes this process straightforward and efficient.</p><h3>Setting Up the Project</h3><p>First, initialize a new Node.js project:</p><pre><code>npm init -y</code></pre><p>Then install Express:</p><pre><code>npm install express</code></pre><h3>Creating a Basic Server</h3><p>Here's a simple Express server:</p><pre><code>const express = require('express');\nconst app = express();\nconst PORT = 3000;\n\napp.get('/', (req, res) => {\n  res.send('Hello World!');\n});\n\napp.listen(PORT, () => {\n  console.log(`Server running on port ${PORT}`);\n});</code></pre><h3>Adding Routes</h3><p>Organize your API with proper routes:</p><pre><code>app.get('/api/users', (req, res) => {\n  // Return list of users\n});\n\napp.post('/api/users', (req, res) => {\n  // Create new user\n});</code></pre>",
+                image: "https://images.unsplash.com/photo-1547658719-da2b51169166?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1528&q=80",
+                tags: ["nodejs", "express", "backend"],
+                date: "June 18, 2023",
+                likes: 29,
+                comments: 3,
+                featured: false
+            },
+            {
+                id: 4,
+                title: "Responsive Design Principles for 2023",
+                excerpt: "Learn the latest techniques for creating websites that look great on any device.",
+                content: "<p>Responsive design is no longer optional—it's a necessity. With the variety of devices and screen sizes available today, your website needs to adapt seamlessly.</p><h3>Mobile-First Approach</h3><p>Start by designing for the smallest screens first, then progressively enhance the experience for larger screens.</p><h3>Flexible Grids</h3><p>Use relative units like percentages or viewport units instead of fixed pixels for layout dimensions.</p><pre><code>.container {\n  width: 100%;\n  max-width: 1200px;\n  margin: 0 auto;\n}</code></pre><h3>Media Queries</h3><p>Apply different styles at different breakpoints:</p><pre><code>@media (min-width: 768px) {\n  .sidebar {\n    width: 30%;\n    float: left;\n  }\n}</code></pre><h3>Flexible Images</h3><p>Ensure images scale appropriately:</p><pre><code>img {\n  max-width: 100%;\n  height: auto;\n}</code></pre>",
+                image: "https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1469&q=80",
+                tags: ["responsive", "design", "css"],
+                date: "July 5, 2023",
+                likes: 35,
+                comments: 4,
+                featured: false
+            },
+            {
+                id: 5,
+                title: "Introduction to React Hooks",
+                excerpt: "Understand how React Hooks can simplify your functional components and manage state effectively.",
+                content: "<p>React Hooks, introduced in React 16.8, allow you to use state and other React features without writing a class.</p><h3>useState</h3><p>The most basic Hook for managing local state:</p><pre><code>import { useState } from 'react';\n\nfunction Counter() {\n  const [count, setCount] = useState(0);\n\n  return (\n    <div>\n      <p>You clicked {count} times</p>\n      <button onClick={() => setCount(count + 1)}>\n        Click me\n      </button>\n    </div>\n  );\n}</code></pre><h3>useEffect</h3><p>Perform side effects in function components:</p><pre><code>useEffect(() => {\n  document.title = `You clicked ${count} times`;\n}, [count]); // Only re-run if count changes</code></pre><h3>Custom Hooks</h3><p>You can create your own Hooks to reuse stateful logic:</p><pre><code>function useWindowWidth() {\n  const [width, setWidth] = useState(window.innerWidth);\n\n  useEffect(() => {\n    const handleResize = () => setWidth(window.innerWidth);\n    window.addEventListener('resize', handleResize);\n    return () => window.removeEventListener('resize', handleResize);\n  }, []);\n\n  return width;\n}</code></pre>",
+                image: "https://images.unsplash.com/photo-1633356122102-3fe601e05bd2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+                tags: ["react", "frontend", "javascript"],
+                date: "July 22, 2023",
+                likes: 56,
+                comments: 8,
+                featured: true
+            },
+            {
+                id: 6,
+                title: "Python for Data Science: Essential Libraries",
+                excerpt: "Discover the must-know Python libraries that make data analysis and visualization a breeze.",
+                content: "<p>Python has become the lingua franca of data science due to its powerful and easy-to-use libraries.</p><h3>NumPy</h3><p>The fundamental package for numerical computing in Python:</p><pre><code>import numpy as np\n\n# Create an array\narr = np.array([1, 2, 3, 4, 5])\n\n# Basic operations\nmean = np.mean(arr)</code></pre><h3>Pandas</h3><p>Provides high-performance, easy-to-use data structures:</p><pre><code>import pandas as pd\n\n# Create a DataFrame\ndata = {'Name': ['John', 'Anna', 'Peter'],\n        'Age': [28, 24, 35]}\ndf = pd.DataFrame(data)</code></pre><h3>Matplotlib</h3><p>Comprehensive library for creating static, animated, and interactive visualizations:</p><pre><code>import matplotlib.pyplot as plt\n\nplt.plot([1, 2, 3, 4])\nplt.ylabel('some numbers')\nplt.show()</code></pre><h3>Scikit-learn</h3><p>Simple and efficient tools for predictive data analysis:</p><pre><code>from sklearn.ensemble import RandomForestClassifier\n\nclf = RandomForestClassifier()\nclf.fit(X_train, y_train)</code></pre>",
+                image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+                tags: ["python", "data science", "machine learning"],
+                date: "August 10, 2023",
+                likes: 31,
+                comments: 2,
+                featured: false
+            }
+        ];
+
+        // Sample comments
+        const comments = [
+            {
+                id: 1,
+                postId: 1,
+                author: "Jane Smith",
+                avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+                content: "Great introduction to Tailwind! I've been using it for a few months now and it's completely changed my workflow.",
+                date: "2 days ago"
+            },
+            {
+                id: 2,
+                postId: 1,
+                author: "Mike Johnson",
+                avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+                content: "How does Tailwind compare to Bootstrap in terms of performance?",
+                date: "1 day ago"
+            },
+            {
+                id: 3,
+                postId: 1,
+                author: "Sarah Williams",
+                avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+                content: "I love the utility-first approach. It makes customization so much easier than fighting with Bootstrap's opinionated styles.",
+                date: "5 hours ago"
+            }
+        ];
+
+        // DOM Elements
+        const featuredPostsContainer = document.getElementById('featured-posts');
+        const recentPostsContainer = document.getElementById('recent-posts');
+        const createPostBtn = document.getElementById('create-post-btn');
+        const createPostModal = document.getElementById('create-post-modal');
+        const closeModalBtn = document.getElementById('close-modal');
+        const cancelPostBtn = document.getElementById('cancel-post');
+        const postForm = document.getElementById('post-form');
+        const postDetailModal = document.getElementById('post-detail-modal');
+        const closeDetailModalBtn = document.getElementById('close-detail-modal');
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const sortNewestBtn = document.getElementById('sort-newest');
+        const sortPopularBtn = document.getElementById('sort-popular');
+        const loadMoreBtn = document.getElementById('load-more');
+        const editorToolbarButtons = document.querySelectorAll('.editor-toolbar button');
+        const editor = document.getElementById('editor');
+        const commentForm = document.getElementById('comment-form');
+
+        // State
+        let currentPosts = [];
+        let visiblePosts = 3;
+        let currentSort = 'newest';
+
+        // Initialize the app
+        function init() {
+            renderFeaturedPosts();
+            renderRecentPosts();
+            setupEventListeners();
+        }
+
+        // Render featured posts
+        function renderFeaturedPosts() {
+            featuredPostsContainer.innerHTML = '';
+            const featuredPosts = blogPosts.filter(post => post.featured).slice(0, 3);
+            
+            featuredPosts.forEach(post => {
+                const postElement = createPostCard(post);
+                featuredPostsContainer.appendChild(postElement);
+            });
+        }
+
+        // Render recent posts
+        function renderRecentPosts() {
+            recentPostsContainer.innerHTML = '';
+            
+            // Sort posts based on current sort option
+            let sortedPosts = [...blogPosts];
+            if (currentSort === 'newest') {
+                sortedPosts.sort((a, b) => new Date(b.date) - new Date(a.date));
+            } else {
+                sortedPosts.sort((a, b) => b.likes - a.likes);
+            }
+            
+            currentPosts = sortedPosts;
+            const postsToShow = currentPosts.slice(0, visiblePosts);
+            
+            postsToShow.forEach(post => {
+                const postElement = createPostCard(post);
+                recentPostsContainer.appendChild(postElement);
+            });
+            
+            // Show/hide load more button
+            loadMoreBtn.style.display = visiblePosts >= currentPosts.length ? 'none' : 'block';
+        }
+
+        // Create a post card element
+        function createPostCard(post) {
+            const postCard = document.createElement('div');
+            postCard.className = 'post-card bg-white rounded-lg overflow-hidden shadow-md fade-in';
+            postCard.dataset.id = post.id;
+            
+            postCard.innerHTML = `
+                <img src="${post.image}" alt="${post.title}" class="w-full h-48 object-cover">
+                <div class="p-6">
+                    <div class="flex flex-wrap gap-2 mb-3">
+                        ${post.tags.map(tag => `<span class="tag bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-xs">${tag}</span>`).join('')}
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">${post.title}</h3>
+                    <p class="text-gray-600 mb-4">${post.excerpt}</p>
+                    <div class="flex justify-between items-center text-sm text-gray-500">
+                        <span>${post.date}</span>
+                        <div class="flex items-center space-x-4">
+                            <span class="flex items-center">
+                                <i class="far fa-heart mr-1"></i> ${post.likes}
+                            </span>
+                            <span class="flex items-center">
+                                <i class="far fa-comment mr-1"></i> ${post.comments}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Add click event to view post details
+            postCard.addEventListener('click', () => viewPostDetails(post.id));
+            
+            return postCard;
+        }
+
+        // View post details
+        function viewPostDetails(postId) {
+            const post = blogPosts.find(p => p.id === postId);
+            if (!post) return;
+            
+            // Set modal content
+            document.getElementById('detail-title').textContent = post.title;
+            document.getElementById('detail-date').textContent = post.date;
+            document.getElementById('detail-excerpt').textContent = post.excerpt;
+            document.getElementById('detail-content').innerHTML = post.content;
+            
+            const detailImage = document.getElementById('detail-image');
+            detailImage.src = post.image;
+            detailImage.alt = post.title;
+            
+            // Render tags
+            const tagsContainer = document.getElementById('detail-tags');
+            tagsContainer.innerHTML = '';
+            post.tags.forEach(tag => {
+                const tagElement = document.createElement('span');
+                tagElement.className = 'tag bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm';
+                tagElement.textContent = tag;
+                tagsContainer.appendChild(tagElement);
+            });
+            
+            // Render comments
+            const commentsContainer = document.getElementById('comments-section');
+            commentsContainer.innerHTML = '';
+            const postComments = comments.filter(c => c.postId === postId);
+            
+            postComments.forEach(comment => {
+                const commentElement = document.createElement('div');
+                commentElement.className = 'flex space-x-3';
+                commentElement.innerHTML = `
+                    <img src="${comment.avatar}" alt="${comment.author}" class="w-10 h-10 rounded-full">
+                    <div>
+                        <div class="font-medium">${comment.author}</div>
+                        <div class="text-gray-500 text-sm">${comment.date}</div>
+                        <div class="mt-1 text-gray-700">${comment.content}</div>
+                    </div>
+                `;
+                commentsContainer.appendChild(commentElement);
+            });
+            
+            // Show modal
+            postDetailModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Create post modal
+            createPostBtn.addEventListener('click', () => {
+                createPostModal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            });
+            
+            closeModalBtn.addEventListener('click', closeCreatePostModal);
+            cancelPostBtn.addEventListener('click', closeCreatePostModal);
+            
+            // Post detail modal
+            closeDetailModalBtn.addEventListener('click', closePostDetailModal);
+            
+            // Mobile menu
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            // Sort buttons
+            sortNewestBtn.addEventListener('click', () => {
+                if (currentSort !== 'newest') {
+                    currentSort = 'newest';
+                    sortNewestBtn.classList.add('bg-blue-500', 'text-white');
+                    sortNewestBtn.classList.remove('bg-gray-200');
+                    sortPopularBtn.classList.add('bg-gray-200');
+                    sortPopularBtn.classList.remove('bg-blue-500', 'text-white');
+                    renderRecentPosts();
+                }
+            });
+            
+            sortPopularBtn.addEventListener('click', () => {
+                if (currentSort !== 'popular') {
+                    currentSort = 'popular';
+                    sortPopularBtn.classList.add('bg-blue-500', 'text-white');
+                    sortPopularBtn.classList.remove('bg-gray-200');
+                    sortNewestBtn.classList.add('bg-gray-200');
+                    sortNewestBtn.classList.remove('bg-blue-500', 'text-white');
+                    renderRecentPosts();
+                }
+            });
+            
+            // Load more button
+            loadMoreBtn.addEventListener('click', () => {
+                visiblePosts += 3;
+                renderRecentPosts();
+            });
+            
+            // Editor toolbar buttons
+            editorToolbarButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const command = button.dataset.command;
+                    
+                    if (command === 'createLink') {
+                        const url = prompt('Enter the URL:');
+                        if (url) document.execCommand(command, false, url);
+                    } else if (command === 'insertImage') {
+                        const url = prompt('Enter the image URL:');
+                        if (url) document.execCommand(command, false, url);
+                    } else {
+                        document.execCommand(command, false, null);
+                    }
+                    
+                    editor.focus();
+                });
+            });
+            
+            // Form submissions
+            postForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                createNewPost();
+            });
+            
+            commentForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                addComment();
+            });
+            
+            // Close modals when clicking outside
+            window.addEventListener('click', (e) => {
+                if (e.target === createPostModal) {
+                    closeCreatePostModal();
+                }
+                if (e.target === postDetailModal) {
+                    closePostDetailModal();
+                }
+            });
+        }
+
+        // Close create post modal
+        function closeCreatePostModal() {
+            createPostModal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close post detail modal
+        function closePostDetailModal() {
+            postDetailModal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Create a new post
+        function createNewPost() {
+            const title = document.getElementById('post-title').value;
+            const excerpt = document.getElementById('post-excerpt').value;
+            const content = editor.innerHTML;
+            const image = document.getElementById('post-image').value;
+            const tags = document.getElementById('post-tags').value.split(',').map(tag => tag.trim());
+            
+            // Create new post object
+            const newPost = {
+                id: blogPosts.length + 1,
+                title,
+                excerpt,
+                content,
+                image: image || 'https://images.unsplash.com/photo-1547658719-da2b51169166?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1528&q=80',
+                tags: tags.filter(tag => tag.length > 0),
+                date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+                likes: 0,
+                comments: 0,
+                featured: false
+            };
+            
+            // Add to posts array
+            blogPosts.unshift(newPost);
+            
+            // Reset form
+            postForm.reset();
+            editor.innerHTML = '';
+            
+            // Close modal and refresh posts
+            closeCreatePostModal();
+            renderRecentPosts();
+            
+            // Show success message
+            alert('Post created successfully!');
+        }
+
+        // Add a comment
+        function addComment() {
+            const commentInput = document.getElementById('comment');
+            const commentText = commentInput.value.trim();
+            
+            if (commentText) {
+                // In a real app, you would send this to a server
+                const newComment = {
+                    id: comments.length + 1,
+                    postId: 1, // This would be the current post ID in a real app
+                    author: "Current User",
+                    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+                    content: commentText,
+                    date: "Just now"
+                };
+                
+                // Add to comments array
+                comments.unshift(newComment);
+                
+                // Reset input
+                commentInput.value = '';
+                
+                // Refresh comments
+                viewPostDetails(1); // In a real app, you would pass the current post ID
+            }
+        }
+
+        // Initialize the app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
