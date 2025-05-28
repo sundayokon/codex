@@ -1,0 +1,1 @@
+prompt to enzostvs/deepsite on hugging face:Design and develop a modern, fully functional blog web application that allows users to create, read, update, and delete blog posts. The application should include user authentication, role-based permissions, content management, commenting system, and responsive design for optimal viewing across devices.
